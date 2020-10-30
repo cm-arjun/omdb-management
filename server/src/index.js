@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 const port = 5000;
 // const url = process.env.MONGODB_URI;
-const url = "mongodb+srv://nodejsconnect:nodejsconnect@cluster0.7n00j.mongodb.net/training?retryWrites=true&w=majority";
+const url = process.env.MONGODB_URL;
 
 const connectDatabase = async (req, res, next) => {
     try {
@@ -29,9 +29,10 @@ const connectDatabase = async (req, res, next) => {
 app.use(cors());
 app.use(connectDatabase);
 
-app.get('/', async (req, res) => {
+app.get('/:searchValue', async (req, res) => {
+    const { searchValue } = req.params;
     const moviesCollection = nativeClient.db("training").collection("movies");
-    const moviesData = await moviesCollection.find().toArray();
+    const moviesData = await moviesCollection.find({ title : searchValue }).toArray();
     return res.send(moviesData);
 });
 
